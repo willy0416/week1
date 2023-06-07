@@ -14,9 +14,9 @@ class MainWindow(QMainWindow):
         """Window constructor."""
         # Declare instance variables required for YAML file
         self.text = ""
-        self.bool = True
+        self.bool = None
         self.choice = ""
-        self.slider_level = 0
+        self.slider_value = 0
 
         super().__init__()
 
@@ -72,7 +72,6 @@ class MainWindow(QMainWindow):
             self.bool = True
         else:
             self.bool = None
-        print(self.bool)
     
     def on_no_click(self, value):
         if value == Qt.Checked:
@@ -80,7 +79,6 @@ class MainWindow(QMainWindow):
             self.bool = False
         else:
             self.bool = None
-        print(self.bool)
 
 app = QApplication([])
 
