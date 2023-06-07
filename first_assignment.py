@@ -14,7 +14,7 @@ class MainWindow(QMainWindow):
         """Window constructor."""
         # Declare instance variables required for YAML file
         self.text = ""
-        self.yes, self.no = False, False
+        self.bool = True
         self.choice = ""
         self.slider_level = 0
 
@@ -27,7 +27,6 @@ class MainWindow(QMainWindow):
         inner_layout = QHBoxLayout()    # will hold yes/no checkboxes
 
         # Add yes/no checkboxes to the same row
-        # TODO: prevent both yes and no from being simultaneously checked
         self.yes_box = QCheckBox("Yes")
         self.no_box = QCheckBox("No")
         inner_layout.addWidget(self.yes_box)
@@ -70,19 +69,18 @@ class MainWindow(QMainWindow):
     def on_yes_click(self, value):
         if value == Qt.Checked:
             self.no_box.setCheckState(Qt.Unchecked)
-            self.yes, self.no = True, False
+            self.bool = True
         else:
-            self.yes = False
-        print(self.yes, self.no)
+            self.bool = None
+        print(self.bool)
     
     def on_no_click(self, value):
         if value == Qt.Checked:
-            print("working")
             self.yes_box.setCheckState(Qt.Unchecked)
-            self.yes, self.no = False, True
+            self.bool = False
         else:
-            self.no = False
-        print(self.yes, self.no)
+            self.bool = None
+        print(self.bool)
 
 app = QApplication([])
 
