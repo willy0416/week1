@@ -1,5 +1,8 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QCheckBox, QSlider, QComboBox, QWidget, QHBoxLayout, QVBoxLayout, QLineEdit
-from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QLabel, QPushButton, 
+    QCheckBox, QSlider, QComboBox, QWidget, 
+    QHBoxLayout, QVBoxLayout, QLineEdit
+)
 from PyQt5.QtCore import Qt
 
 class MainWindow(QMainWindow):
@@ -9,20 +12,30 @@ class MainWindow(QMainWindow):
     """
     def __init__(self):
         """Window constructor."""
+        # Declare instance variables required for YAML file
+        self.text = ""
+        self.yes, self.no = False, False
+        self.choice = ""
+        self.slider_level = 0
+
         super().__init__()
 
         self.setWindowTitle("Example GUI")
 
-        # Setting up overarching layouts
+        # Set up overarching layouts
         outer_layout = QVBoxLayout()
         inner_layout = QHBoxLayout()    # will hold yes/no checkboxes
 
-        # Adding yes/no checkboxes to the same row
+        # Add yes/no checkboxes to the same row
         # TODO: prevent both yes and no from being simultaneously checked
-        yes_box = QCheckBox("Yes")
-        no_box = QCheckBox("No")
-        inner_layout.addWidget(yes_box)
-        inner_layout.addWidget(no_box)
+        self.yes_box = QCheckBox("Yes")
+        self.no_box = QCheckBox("No")
+        inner_layout.addWidget(self.yes_box)
+        inner_layout.addWidget(self.no_box)
+
+        # Connect checkboxes to slots
+        self.yes_box.stateChanged.connect(self.on_yes_click)
+        self.no_box.stateChanged.connect(self.on_no_click)
 
         textbox = QLineEdit()
 
@@ -53,6 +66,23 @@ class MainWindow(QMainWindow):
 
     def update_slider_label(self, value):
         self.slider_label.setText(str(value))
+
+    def on_yes_click(self, value):
+        if value == Qt.Checked:
+            self.no_box.setCheckState(Qt.Unchecked)
+            self.yes, self.no = True, False
+        else:
+            self.yes = False
+        print(self.yes, self.no)
+    
+    def on_no_click(self, value):
+        if value == Qt.Checked:
+            print("working")
+            self.yes_box.setCheckState(Qt.Unchecked)
+            self.yes, self.no = False, True
+        else:
+            self.no = False
+        print(self.yes, self.no)
 
 app = QApplication([])
 
