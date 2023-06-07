@@ -64,9 +64,11 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(dummy_widget)
 
     def update_slider_label(self, value):
+        """Display slider value."""
         self.slider_label.setText(str(value))
 
     def on_yes_click(self, value):
+        """Slot for the yes checkbox."""
         if value == Qt.Checked:
             self.no_box.setCheckState(Qt.Unchecked)
             self.bool = True
@@ -74,6 +76,7 @@ class MainWindow(QMainWindow):
             self.bool = None
     
     def on_no_click(self, value):
+        """Slot for the no checkbox."""
         if value == Qt.Checked:
             self.yes_box.setCheckState(Qt.Unchecked)
             self.bool = False
