@@ -7,14 +7,12 @@ from PyQt5.QtCore import Qt
 import os
 
 class MainWindow(QMainWindow):
-    """Custom window meant to display a self.textbox, self.dropdown bar,
-    yes/no checkboxes, slider from 0 to 100, and save button when
+    """Custom window meant to display a textbox, dropdown bar,
+    checkboxes, slider from 0 to 100, and save button when
     viewed from top to bottom.
     """
     def __init__(self):
         """Window constructor."""
-        self.dict = {}
-
         super().__init__()
 
         self.setWindowTitle("Example GUI")
@@ -46,7 +44,7 @@ class MainWindow(QMainWindow):
         # Connect slider to slot
         self.slider.valueChanged.connect(self.update_slider_label)
 
-        self.slider_label = QLabel('0')
+        self.slider_label = QLabel("0")
         self.slider_label.setAlignment(Qt.AlignCenter)
         self.slider_label.setMinimumWidth(80)
 
@@ -88,26 +86,26 @@ class MainWindow(QMainWindow):
         Creates pop-up window to indicates that data has been 
         saved. Resets fields to default values.
         """
-        # if not os.path.isfile('test.yaml'): # ignore for now
         # Ask user to choose a checkbox if none are selected
+        dict = {}
         if not any(map(lambda x: x.isChecked(), self.options)):
             QMessageBox.warning(self, "Cannot save!", "You must select an option.")
             return
         
         # Grab text from text box
-        self.dict['text'] = self.textbox.text()
+        dict["text"] = self.textbox.text()
 
         # Grab option from checkboxes
-        for i in range(len(self.options)):
-            if self.options[i].isChecked():
-                self.dict['option'] = i + 1
+        for i, checkbox in enumerate(self.options):
+            if checkbox.isChecked():
+                self.dict["option"] = i + 1
                 break
         
         # Grab choice from self.dropdown
-        self.dict['choice'] = self.dropdown.currentText()
+        dict["choice"] = self.dropdown.currentText()
 
         # Grab value from slider
-        self.dict['slider'] = int(self.slider_label.text())
+        dict["slider"] = int(self.slider_label.text())
         
         # Indicate to the user that their data has been saved
         dialog = QMessageBox(self)
@@ -115,7 +113,7 @@ class MainWindow(QMainWindow):
         dialog.exec_()
 
         # Reset fields to initial values
-        self.textbox.setText('')
+        self.textbox.setText("")
         for option in self.options:
             option.setCheckState(Qt.Unchecked)
         self.dropdown.setCurrentIndex(0)
