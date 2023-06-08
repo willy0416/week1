@@ -1,23 +1,18 @@
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QLabel, QPushButton, 
     QCheckBox, QSlider, QComboBox, QWidget, 
-    QHBoxLayout, QVBoxLayout, QLineEdit
+    QHBoxLayout, QVBoxLayout, QLineEdit, QMessageBox
 )
 from PyQt5.QtCore import Qt
+import os
 
 class MainWindow(QMainWindow):
     """Custom window meant to display a textbox, dropdown bar,
-    yes/no checkboxes, slider from 0 to 100, and save button when
+    checkboxes, slider from 0 to 100, and save button when
     viewed from top to bottom.
     """
     def __init__(self):
         """Window constructor."""
-        # Declare instance variables required for YAML file
-        self.text = ""
-        self.bool = None
-        self.choice = ""
-        self.slider_value = 0
-
         super().__init__()
 
         self.setWindowTitle("Example GUI")
@@ -27,34 +22,42 @@ class MainWindow(QMainWindow):
         inner_layout = QHBoxLayout()    # will hold yes/no checkboxes
 
         # Add yes/no checkboxes to the same row
-        self.yes_box = QCheckBox("Yes")
-        self.no_box = QCheckBox("No")
-        inner_layout.addWidget(self.yes_box)
-        inner_layout.addWidget(self.no_box)
+        self.first_option = QCheckBox("Option 1")
+        self.second_option = QCheckBox("Option 2")
+        self.options = [self.first_option, self.second_option]
+        inner_layout.addWidget(self.first_option)
+        inner_layout.addWidget(self.second_option)
 
         # Connect checkboxes to slots
-        self.yes_box.stateChanged.connect(self.on_yes_click)
-        self.no_box.stateChanged.connect(self.on_no_click)
+        self.first_option.stateChanged.connect(self.on_first_option_click)
+        self.second_option.stateChanged.connect(self.on_second_option_click)
 
-        textbox = QLineEdit()
+        self.textbox = QLineEdit()
+        self.textbox.setPlaceholderText("Type here")
 
-        dropdown = QComboBox()
-        dropdown.addItems(["One", "Two", "Three"])
+        self.dropdown = QComboBox()
+        self.dropdown.addItems(["One", "Two", "Three"])
 
-        slider = QSlider(Qt.Horizontal)
-        slider.setRange(0, 100)
-        slider.valueChanged.connect(self.update_slider_label)
+        self.slider = QSlider(Qt.Horizontal)
+        self.slider.setRange(0, 100)
 
-        self.slider_label = QLabel('0')
+        # Connect slider to slot
+        self.slider.valueChanged.connect(self.update_slider_label)
+
+        self.slider_label = QLabel("0")
         self.slider_label.setAlignment(Qt.AlignCenter)
         self.slider_label.setMinimumWidth(80)
 
         save_button = QPushButton("Save")
+        
+        # Connect save button to slot
+        save_button.clicked.connect(self.on_save_click)
 
-        outer_layout.addWidget(textbox)
-        outer_layout.addWidget(dropdown)
+        # Add all components to the outermost layout
+        outer_layout.addWidget(self.textbox)
+        outer_layout.addWidget(self.dropdown)
         outer_layout.addLayout(inner_layout)
-        outer_layout.addWidget(slider)
+        outer_layout.addWidget(self.slider)
         outer_layout.addWidget(self.slider_label)
         outer_layout.addWidget(save_button, alignment=Qt.AlignRight)
 
@@ -67,21 +70,58 @@ class MainWindow(QMainWindow):
         """Display slider value."""
         self.slider_label.setText(str(value))
 
-    def on_yes_click(self, value):
-        """Slot for the yes checkbox."""
+    def on_first_option_click(self, value):
+        """Slot for first checkbox."""
         if value == Qt.Checked:
-            self.no_box.setCheckState(Qt.Unchecked)
-            self.bool = True
-        else:
-            self.bool = None
+            self.second_option.setCheckState(Qt.Unchecked)
     
-    def on_no_click(self, value):
-        """Slot for the no checkbox."""
+    def on_second_option_click(self, value):
+        """Slot for second checkbox."""
         if value == Qt.Checked:
-            self.yes_box.setCheckState(Qt.Unchecked)
-            self.bool = False
-        else:
-            self.bool = None
+            self.first_option.setCheckState(Qt.Unchecked)
+
+    def on_save_click(self):
+        """Slot for the save button. Grabs pertinent values 
+        and writes current window status to test.yaml (WIP).
+        Creates pop-up window to indicates that data has been 
+        saved. Resets fields to default values.
+        """
+        # Ask user to choose a checkbox if none are selected
+        dict = {}
+        if not any(map(lambda x: x.isChecked(), self.options)):
+            QMessageBox.warning(self, "Cannot save!", "You must select an option.")
+            return
+        
+        # Grab text from text box
+        dict["text"] = self.textbox.text()
+
+        # Grab option from checkboxes
+        for i, checkbox in enumerate(self.options):
+            if checkbox.isChecked():
+                self.dict["option"] = i + 1
+                break
+        
+        # Grab choice from self.dropdown
+        dict["choice"] = self.dropdown.currentText()
+
+        # Grab value from slider
+        dict["slider"] = int(self.slider_label.text())
+        
+        # Indicate to the user that their data has been saved
+        dialog = QMessageBox(self)
+        dialog.setText("Your information has been saved.")
+        dialog.exec_()
+
+        # Reset fields to initial values
+        self.textbox.setText("")
+        for option in self.options:
+            option.setCheckState(Qt.Unchecked)
+        self.dropdown.setCurrentIndex(0)
+        self.slider.setTracking(True)
+        self.slider.setValue(0)
+        self.slider.setSliderPosition(0)
+        self.slider.update()
+        self.slider.repaint()
 
 app = QApplication([])
 
