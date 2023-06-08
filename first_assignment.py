@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout, QVBoxLayout, QLineEdit, QMessageBox
 )
 from PyQt5.QtCore import Qt
-import os
+import os, yaml
 
 class MainWindow(QMainWindow):
     """Custom window meant to display a textbox, dropdown bar,
@@ -86,8 +86,9 @@ class MainWindow(QMainWindow):
         Creates pop-up window to indicates that data has been 
         saved. Resets fields to default values.
         """
-        # Ask user to choose a checkbox if none are selected
         dict = {}
+        
+        # Ask user to choose a checkbox if none are selected
         if not any(map(lambda x: x.isChecked(), self.options)):
             QMessageBox.warning(self, "Cannot save!", "You must select an option.")
             return
@@ -98,7 +99,7 @@ class MainWindow(QMainWindow):
         # Grab option from checkboxes
         for i, checkbox in enumerate(self.options):
             if checkbox.isChecked():
-                self.dict["option"] = i + 1
+                dict["option"] = i + 1
                 break
         
         # Grab choice from self.dropdown
@@ -122,6 +123,17 @@ class MainWindow(QMainWindow):
         self.slider.setSliderPosition(0)
         self.slider.update()
         self.slider.repaint()
+
+        # Write status to test.yaml
+        if not os.path.isfile("test.yaml"):
+            with open("test.yaml", "w") as file:
+                yaml.dump({0: dict}, file)
+        else:
+            with open("test.yaml", "r") as file:
+                previous_entries = yaml.safe_load(file)
+                index = len(previous_entries)
+            with open("test.yaml", "a") as file:
+                yaml.dump({index: dict}, file)
 
 app = QApplication([])
 
