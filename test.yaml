@@ -13,3 +13,13 @@
   option: 2
   slider: 46
   text: zeagg
+3:
+  choice: Three
+  option: 1
+  slider: 59
+  text: example
+4:
+  choice: One
+  option: 1
+  slider: 1
+  text: strongly typed?
